@@ -9,7 +9,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { LegendComponent } from './legend/legend.component';
 
 @NgModule({
-  declarations: [AppComponent, WelcomeComponent, MapViewComponent, LegendComponent],
+  declarations: [
+    AppComponent,
+    WelcomeComponent,
+    MapViewComponent,
+    LegendComponent,
+  ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [],
   bootstrap: [AppComponent],
