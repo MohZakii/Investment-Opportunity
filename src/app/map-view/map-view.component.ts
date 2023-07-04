@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import MapView from '@arcgis/core/views/MapView';
 import Map from '@arcgis/core/Map.js';
 import Sublayer from '@arcgis/core/layers/support/Sublayer.js';
 import { environment } from 'src/environments/environment';
 import { MapService } from 'src/services/map.service';
+import { ZoneLayer } from 'src/models/GS';
+import { AppStateService } from 'src/services/app-state.service';
 
 @Component({
   selector: 'app-map-view',
@@ -19,32 +21,23 @@ export class MapViewComponent implements OnInit {
   private serviceUrl = environment.serviceUrl;
   isMapReady: boolean = false;
 
-  constructor(private mapService: MapService) {}
+  constructor(
+    private _AppStateSrvc: AppStateService,
+    private mapService: MapService
+  ) {
+    effect(() => {
+      this.zones = _AppStateSrvc.zonwLayerList().map((item) => item.zoneLayer);
+    });
+  }
 
   ngOnInit(): void {
     this.initializeMap().then(() => {
       this.isMapReady = true;
-      this.getZones();
+      this.mapService.getZones(this.mapImageLayer);
     });
 
     this.mapService.onZoomToExtent$.subscribe((value) => {
       this.zoomToExtent(value);
-    });
-  }
-
-  getZones() {
-    // const obs = this.mapService.getZoneData(this.mapImageLayer)
-    this.mapImageLayer.when(() => {
-      this.mapImageLayer.sublayers.map((sublayer) => {
-        sublayer.load().then((layer: Sublayer) => {
-          if (
-            layer.sourceJSON.type === 'Group Layer' &&
-            layer.title !== 'Basemap'
-          ) {
-            this.zones.push(layer);
-          }
-        });
-      });
     });
   }
 
