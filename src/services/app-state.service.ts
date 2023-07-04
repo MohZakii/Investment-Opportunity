@@ -1,14 +1,34 @@
 import { Injectable, signal } from '@angular/core';
-import { ZoneLayer } from 'src/models/GS';
+import {
+  MapViewSpatialReference,
+  PlotFeatures,
+  ZoneLayer,
+} from 'src/models/GS';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppStateService {
-  // track distance query results
-  zonwLayerList = signal<ZoneLayer[]>([]);
+  // track zone layer
+  zoneLayerList = signal<ZoneLayer[]>([]);
 
-  addzonwLayer(result: ZoneLayer) {
-    this.zonwLayerList.mutate((res) => res.push(result));
+  // track zone features
+  plotFeaturesList = signal<PlotFeatures[]>([]);
+
+  // track mapview spatialReference
+  spatialReference = signal<MapViewSpatialReference>(
+    new MapViewSpatialReference()
+  );
+
+  setMapViewSpatialReference(spatialReference: MapViewSpatialReference) {
+    this.spatialReference.set(spatialReference);
+  }
+
+  addzoneLayer(result: ZoneLayer) {
+    this.zoneLayerList.mutate((res) => res.push(result));
+  }
+
+  addPlotFeatures(result: PlotFeatures) {
+    this.plotFeaturesList.mutate((res) => res.push(result));
   }
 }

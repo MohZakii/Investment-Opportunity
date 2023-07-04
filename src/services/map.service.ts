@@ -33,8 +33,14 @@ export class MapService {
             layer.sourceJSON.type === 'Group Layer' &&
             layer.title !== 'Basemap'
           ) {
-            const zoneLayer = new ZoneLayer(layer);
-            this._AppStateSrvc.addzonwLayer(zoneLayer);
+            // add zone layer to state if not added
+            const stateZone = this._AppStateSrvc
+              .zoneLayerList()
+              .find((item) => item.zoneLayer.id === layer.id);
+            if (!stateZone) {
+              const zoneLayer = new ZoneLayer(layer);
+              this._AppStateSrvc.addzoneLayer(zoneLayer);
+            }
           }
         });
       });

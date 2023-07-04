@@ -1,0 +1,12 @@
+<div (click)="zoneCardClicked()" *ngIf="isZoneCardView">
+  <div>{{ zone.title }}</div>
+  <div *ngIf="features.length > 0">{{ features.length }}</div>
+  <div
+    *ngIf="features.length === 0"
+    class="spinner-border spinner-border-sm"
+    role="status"
+  >
+    <span class="sr-only"></span>
+  </div>
+  <div>...</div>
+</div>

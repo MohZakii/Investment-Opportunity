@@ -7,6 +7,8 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { MapViewComponent } from './map-view/map-view.component';
 import { HttpClientModule } from '@angular/common/http';
 import { LegendComponent } from './legend/legend.component';
+import { ZoneCardListComponent } from './zone-card-list/zone-card-list.component';
+import { ZoneCardItemComponent } from './zone-card-item/zone-card-item.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +16,8 @@ import { LegendComponent } from './legend/legend.component';
     WelcomeComponent,
     MapViewComponent,
     LegendComponent,
+    ZoneCardListComponent,
+    ZoneCardItemComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [],

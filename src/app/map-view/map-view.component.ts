@@ -5,7 +5,7 @@ import Map from '@arcgis/core/Map.js';
 import Sublayer from '@arcgis/core/layers/support/Sublayer.js';
 import { environment } from 'src/environments/environment';
 import { MapService } from 'src/services/map.service';
-import { ZoneLayer } from 'src/models/GS';
+import { MapViewSpatialReference, ZoneLayer } from 'src/models/GS';
 import { AppStateService } from 'src/services/app-state.service';
 
 @Component({
@@ -26,14 +26,26 @@ export class MapViewComponent implements OnInit {
     private mapService: MapService
   ) {
     effect(() => {
-      this.zones = _AppStateSrvc.zonwLayerList().map((item) => item.zoneLayer);
+      const stateZones = _AppStateSrvc
+        .zoneLayerList()
+        .map((item) => item.zoneLayer);
+      if (stateZones.length !== this.zones.length) {
+        this.zones = stateZones;
+      }
     });
   }
 
   ngOnInit(): void {
     this.initializeMap().then(() => {
-      this.isMapReady = true;
+      // creates zoneLayers in appState
       this.mapService.getZones(this.mapImageLayer);
+      this.isMapReady = true;
+
+      // set the mapview spatial reference to appState
+      const spatialReference = new MapViewSpatialReference(
+        this.view.spatialReference
+      );
+      this._AppStateSrvc.setMapViewSpatialReference(spatialReference);
     });
 
     this.mapService.onZoomToExtent$.subscribe((value) => {
