@@ -7,4 +7,10 @@
 }
 .container {
   margin: 10px;
+  color: white;
+}
+canvas {
+  /* height: 50px !important;
+  width: 50px !important; */
+  display: none;
 }

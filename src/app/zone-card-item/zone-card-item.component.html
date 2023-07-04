@@ -1,10 +1,13 @@
 <div
   class="container"
-  *ngIf="displayedZoneId === zone.id"
+  *ngIf="isZoneCardView && displayedZoneId === zone.id"
   (click)="zoneCardClicked()"
 >
   <div>{{ zone.title }}</div>
-  <div *ngIf="features.length > 0">{{ features.length }}</div>
+  <div *ngIf="features.length > 0">
+    <p class="display-6">{{ features.length }}</p>
+    <canvas id="chartCanvas" #chartCanvas></canvas>
+  </div>
   <div
     *ngIf="features.length === 0"
     class="spinner-border spinner-border-sm"
@@ -13,8 +16,8 @@
     <span class="sr-only"></span>
   </div>
   <div>...</div>
-  <app-type-card-list
-    *ngIf="isZoneDetailView && displayedZoneId === zone.id"
-    [zone]="zone"
-  ></app-type-card-list>
 </div>
+<app-type-card-list
+  *ngIf="isTypeCardView && displayedZoneId === zone.id"
+  [zone]="zone"
+></app-type-card-list>

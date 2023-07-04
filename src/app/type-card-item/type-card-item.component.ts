@@ -21,7 +21,4 @@ export class TypeCardItemComponent {
       this.features as __esri.Graphic[]
     );
   }
-  // getTypesLength(subtype: number | string): number | undefined {
-  //   return this.featuresSubtyped.get(subtype)?.length;
-  // }
 }

@@ -1,6 +1,6 @@
-<div (click)="zoneDetailClicked()" class="zone-detail">
+<div (click)="zoneDetailClicked()" class="container">
   <div>{{ subtype }}</div>
-  <div>
-    {{ features?.length }}
+  <div class="display-6">
+    {{ features?.length || 0 }}
   </div>
 </div>
