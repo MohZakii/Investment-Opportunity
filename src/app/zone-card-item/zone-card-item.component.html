@@ -1,4 +1,8 @@
-<div (click)="zoneCardClicked()" *ngIf="isZoneCardView">
+<div
+  class="container"
+  *ngIf="displayedZoneId === zone.id"
+  (click)="zoneCardClicked()"
+>
   <div>{{ zone.title }}</div>
   <div *ngIf="features.length > 0">{{ features.length }}</div>
   <div
@@ -9,4 +13,8 @@
     <span class="sr-only"></span>
   </div>
   <div>...</div>
+  <app-type-card-list
+    *ngIf="isZoneDetailView && displayedZoneId === zone.id"
+    [zone]="zone"
+  ></app-type-card-list>
 </div>

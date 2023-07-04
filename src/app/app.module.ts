@@ -9,6 +9,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { LegendComponent } from './legend/legend.component';
 import { ZoneCardListComponent } from './zone-card-list/zone-card-list.component';
 import { ZoneCardItemComponent } from './zone-card-item/zone-card-item.component';
+import { TypeCardListComponent } from './type-card-list/type-card-list.component';
+import { TypeCardItemComponent } from './type-card-item/type-card-item.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +20,8 @@ import { ZoneCardItemComponent } from './zone-card-item/zone-card-item.component
     LegendComponent,
     ZoneCardListComponent,
     ZoneCardItemComponent,
+    TypeCardListComponent,
+    TypeCardItemComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [],

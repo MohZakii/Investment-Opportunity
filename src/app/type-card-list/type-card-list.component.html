@@ -1,0 +1,11 @@
+<div class="container">
+  <div class="d-flex flex-nowrap overflow-auto">
+    <app-type-card-item
+      *ngFor="let subtype of subtypes | keyvalue"
+      [subtype]="subtype.value"
+      [plotLayer]="plotLayer"
+      [features]="featuresSubtyped.get(subtype.key)"
+    >
+    </app-type-card-item>
+  </div>
+</div>

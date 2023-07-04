@@ -1,10 +1,8 @@
 :host {
   background-color: gray;
+  /* height: 100px; */
+  width: 100%;
+  padding: 10px;
   text-align: center;
   cursor: pointer;
-  display: inline-block;
-  max-width: 100%;
-}
-.container {
-  margin: 10px;
 }

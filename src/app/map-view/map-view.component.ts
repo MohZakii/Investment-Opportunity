@@ -3,6 +3,9 @@ import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import MapView from '@arcgis/core/views/MapView';
 import Map from '@arcgis/core/Map.js';
 import Sublayer from '@arcgis/core/layers/support/Sublayer.js';
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js';
+import Graphic from '@arcgis/core/Graphic';
+
 import { environment } from 'src/environments/environment';
 import { MapService } from 'src/services/map.service';
 import { MapViewSpatialReference, ZoneLayer } from 'src/models/GS';
@@ -51,6 +54,12 @@ export class MapViewComponent implements OnInit {
     this.mapService.onZoomToExtent$.subscribe((value) => {
       this.zoomToExtent(value);
     });
+
+    this.mapService.onFilterFeatures$.subscribe((value) => {
+      if (value.plotLayer.url) {
+        this.filterFeatures(value.plotLayer, value.features);
+      }
+    });
   }
 
   async initializeMap(): Promise<any> {
@@ -78,8 +87,36 @@ export class MapViewComponent implements OnInit {
 
     return this.view.when();
   }
-  zoomToExtent(fullExtent: __esri.Extent) {
+  zoomToExtent(fullExtent: __esri.Extent | __esri.Collection<Graphic>) {
     const opts = { duration: 1000 };
     this.view.goTo(fullExtent, opts);
+  }
+
+  filterFeatures(plotLayer: __esri.Sublayer, features: __esri.Graphic[]) {
+    // create graphics layer and add it tothe map
+    let graphicsLayer = this.map.layers.find(
+      (layer) => layer.id === plotLayer.id.toString()
+    ) as GraphicsLayer;
+    if (!graphicsLayer) {
+      graphicsLayer = new GraphicsLayer({
+        id: plotLayer.id.toString(),
+      });
+      this.map.add(graphicsLayer);
+    }
+    plotLayer.visible = false;
+    graphicsLayer.graphics.removeAll();
+
+    // create a graphic from each feature and add it
+    features?.map((feature) => {
+      const graphic = new Graphic({
+        geometry: feature.geometry,
+        symbol: plotLayer.renderer.get('symbol'),
+      });
+
+      graphicsLayer.add(graphic);
+    });
+
+    // zoom to result
+    this.zoomToExtent(graphicsLayer.graphics);
   }
 }

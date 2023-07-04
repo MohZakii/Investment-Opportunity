@@ -22,7 +22,7 @@ export class ZoneCardService {
     this.isZoneCardViewSubject.next(value);
   }
 
-  setIsZoneDetailView(isCardDetailView: boolean, displayedZoneId: number) {
+  setIsTypeCardView(isCardDetailView: boolean, displayedZoneId: number) {
     this.isZoneDetailViewSubject.next({
       isCardDetailView,
       displayedZoneId: displayedZoneId,
