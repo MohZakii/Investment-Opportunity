@@ -9,10 +9,10 @@ import {
   providedIn: 'root',
 })
 export class AppStateService {
-  // track zone layer
+  // track ZoneLayer instances
   zoneLayerList = signal<ZoneLayer[]>([]);
 
-  // track zone features
+  // track PlotFeatures instances
   plotFeaturesList = signal<PlotFeatures[]>([]);
 
   // track mapview spatialReference

@@ -12,8 +12,6 @@ import { AppStateService } from './app-state.service';
   providedIn: 'root',
 })
 export class MapService {
-  private serviceUrl = environment.serviceUrl;
-
   private zoomToExtentSubject = new BehaviorSubject<Extent>(new Extent());
   onZoomToExtent$ = this.zoomToExtentSubject.asObservable();
 
@@ -24,8 +22,8 @@ export class MapService {
   onFilterFeatures$ = this.filterFeaturesSubject.asObservable();
 
   constructor(private _AppStateSrvc: AppStateService) {}
-  getZones(mapImageLayer: MapImageLayer) {
-    // const obs = this.mapService.getZoneData(this.mapImageLayer)
+
+  setZones(mapImageLayer: MapImageLayer) {
     mapImageLayer.when(() => {
       mapImageLayer.sublayers.map((sublayer) => {
         sublayer.load().then((layer: Sublayer) => {
@@ -46,9 +44,11 @@ export class MapService {
       });
     });
   }
+
   zoomToExtent(fullExtent: Extent) {
     this.zoomToExtentSubject.next(fullExtent);
   }
+
   filterFeatures(plotLayer: Sublayer, features: Graphic[]) {
     this.filterFeaturesSubject.next({ features, plotLayer });
   }

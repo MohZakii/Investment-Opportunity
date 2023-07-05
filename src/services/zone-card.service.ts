@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import Sublayer from '@arcgis/core/layers/support/Sublayer';
 import { BehaviorSubject } from 'rxjs';
+import { AppStateService } from './app-state.service';
+import { PlotFeatures } from 'src/models/GS';
 
 @Injectable({
   providedIn: 'root',
@@ -13,10 +15,9 @@ export class ZoneCardService {
     isCardDetailView: boolean;
     displayedZoneId: number;
   }>({ isCardDetailView: false, displayedZoneId: 0 });
-
   isZoneDetailView$ = this.isZoneDetailViewSubject.asObservable();
 
-  constructor() {}
+  constructor(private _AppStateSrvc: AppStateService) {}
 
   setIsZoneCardView(value: boolean) {
     this.isZoneCardViewSubject.next(value);
@@ -48,5 +49,22 @@ export class ZoneCardService {
     }
 
     return plotLayer;
+  }
+
+  async getFeaturesFromState(zone: Sublayer): Promise<__esri.Graphic[]> {
+    let statePlotFeatures = this._AppStateSrvc
+      .plotFeaturesList()
+      .find((item) => item.zone.id === zone.id);
+
+    // get features from state if exists (in order not to make query many times)
+    let features;
+    if (statePlotFeatures) {
+      features = statePlotFeatures.features;
+    } else {
+      const plotFeatures = await PlotFeatures.create(zone);
+      this._AppStateSrvc.addPlotFeatures(plotFeatures);
+      features = plotFeatures.features;
+    }
+    return features;
   }
 }

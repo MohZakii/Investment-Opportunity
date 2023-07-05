@@ -2,7 +2,6 @@ import { Component, OnInit, effect } from '@angular/core';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import MapView from '@arcgis/core/views/MapView';
 import Map from '@arcgis/core/Map.js';
-import Sublayer from '@arcgis/core/layers/support/Sublayer.js';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js';
 import Graphic from '@arcgis/core/Graphic';
 
@@ -20,28 +19,18 @@ export class MapViewComponent implements OnInit {
   view!: MapView;
   map!: Map;
   mapImageLayer!: MapImageLayer;
-  zones: Sublayer[] = [];
   private serviceUrl = environment.serviceUrl;
   isMapReady: boolean = false;
 
   constructor(
     private _AppStateSrvc: AppStateService,
     private mapService: MapService
-  ) {
-    effect(() => {
-      const stateZones = _AppStateSrvc
-        .zoneLayerList()
-        .map((item) => item.zoneLayer);
-      if (stateZones.length !== this.zones.length) {
-        this.zones = stateZones;
-      }
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.initializeMap().then(() => {
       // creates zoneLayers in appState
-      this.mapService.getZones(this.mapImageLayer);
+      this.mapService.setZones(this.mapImageLayer);
       this.isMapReady = true;
 
       // set the mapview spatial reference to appState
@@ -51,15 +40,7 @@ export class MapViewComponent implements OnInit {
       this._AppStateSrvc.setMapViewSpatialReference(spatialReference);
     });
 
-    this.mapService.onZoomToExtent$.subscribe((value) => {
-      this.zoomToExtent(value);
-    });
-
-    this.mapService.onFilterFeatures$.subscribe((value) => {
-      if (value.plotLayer.url) {
-        this.filterFeatures(value.plotLayer, value.features);
-      }
-    });
+    this.subscribeToServices();
   }
 
   async initializeMap(): Promise<any> {
@@ -87,13 +68,26 @@ export class MapViewComponent implements OnInit {
 
     return this.view.when();
   }
+
+  subscribeToServices() {
+    this.mapService.onZoomToExtent$.subscribe((value) => {
+      this.zoomToExtent(value);
+    });
+
+    this.mapService.onFilterFeatures$.subscribe((value) => {
+      if (value.plotLayer.url) {
+        this.filterFeatures(value.plotLayer, value.features);
+      }
+    });
+  }
+
   zoomToExtent(fullExtent: __esri.Extent | __esri.Collection<Graphic>) {
     const opts = { duration: 1000 };
     this.view.goTo(fullExtent, opts);
   }
 
   filterFeatures(plotLayer: __esri.Sublayer, features: __esri.Graphic[]) {
-    // create graphics layer and add it tothe map
+    // create graphics layer and add it to the map
     let graphicsLayer = this.map.layers.find(
       (layer) => layer.id === plotLayer.id.toString()
     ) as GraphicsLayer;

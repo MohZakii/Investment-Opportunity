@@ -11,6 +11,7 @@ import { ZoneCardListComponent } from './zone-card-list/zone-card-list.component
 import { ZoneCardItemComponent } from './zone-card-item/zone-card-item.component';
 import { TypeCardListComponent } from './type-card-list/type-card-list.component';
 import { TypeCardItemComponent } from './type-card-item/type-card-item.component';
+import { BarChartComponent } from './bar-chart/bar-chart.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { TypeCardItemComponent } from './type-card-item/type-card-item.component
     ZoneCardItemComponent,
     TypeCardListComponent,
     TypeCardItemComponent,
+    BarChartComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [],

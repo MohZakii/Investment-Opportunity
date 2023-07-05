@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import Graphic from '@arcgis/core/Graphic';
 import Sublayer from '@arcgis/core/layers/support/Sublayer';
-import { first, lastValueFrom } from 'rxjs';
+import { first, firstValueFrom, lastValueFrom } from 'rxjs';
 import { ISubtype } from 'src/interfaces/subtype';
 import { PlotFeatures } from 'src/models/GS';
 import { AppStateService } from 'src/services/app-state.service';
@@ -29,13 +29,17 @@ export class TypeCardListComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.getFeatures();
+    await this.setFeatures();
 
-    this.getSubtypes();
+    this.subtypes = await this._TypeCardService.getSubtypesMap(
+      this.plotLayer.url
+    );
 
-    this.featuresSubtyped = await this.getFeaturesSubtyped();
+    this.featuresSubtyped = await this._TypeCardService.getFeaturesSubtyped(
+      this.plotLayer.url
+    );
   }
-  async getFeatures() {
+  async setFeatures() {
     let statePlotFeatures = this._AppStateSrvc
       .plotFeaturesList()
       .find((item) => item.zone.id === this.zone.id);
@@ -53,35 +57,5 @@ export class TypeCardListComponent implements OnInit {
       await plotFeatures.plotLayer.when();
       this.plotLayer = plotFeatures.plotLayer;
     }
-  }
-  getSubtypes() {
-    this._TypeCardService
-      .getSubtypes(this.plotLayer.url)
-      .subscribe((subtypes: ISubtype[]) => {
-        subtypes.map((subtype) => {
-          this.subtypes.set(subtype.code, subtype.name);
-        });
-      });
-  }
-  async getFeaturesSubtyped(): Promise<Map<string | number, Graphic[]>> {
-    const featuresSubtyped: Map<number | string, Graphic[]> = new Map<
-      number,
-      Graphic[]
-    >();
-
-    const typeIdField: string | undefined = await lastValueFrom(
-      this._TypeCardService.getTypeIdField(this.plotLayer.url).pipe(first())
-    );
-
-    this.features.forEach((feature) => {
-      const subtype = feature.attributes[typeIdField as string];
-      if (featuresSubtyped.has(subtype)) {
-        featuresSubtyped.get(subtype)?.push(feature);
-      } else {
-        featuresSubtyped.set(subtype, [feature]);
-      }
-    });
-
-    return featuresSubtyped;
   }
 }

@@ -6,7 +6,11 @@
   <div>{{ zone.title }}</div>
   <div *ngIf="features.length > 0">
     <p class="display-6">{{ features.length }}</p>
-    <canvas id="chartCanvas" #chartCanvas></canvas>
+    <app-bar-chart
+      *ngIf="isBarChartReady"
+      [labels]="getBarChartValues().labels"
+      [data]="getBarChartValues().data"
+    ></app-bar-chart>
   </div>
   <div
     *ngIf="features.length === 0"
