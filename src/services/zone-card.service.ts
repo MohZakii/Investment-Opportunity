@@ -3,6 +3,7 @@ import Sublayer from '@arcgis/core/layers/support/Sublayer';
 import { BehaviorSubject } from 'rxjs';
 import { AppStateService } from './app-state.service';
 import { PlotFeatures } from 'src/models/GS';
+import { PlotFeaturesService } from './plot-features.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +18,10 @@ export class ZoneCardService {
   }>({ isCardDetailView: false, displayedZoneId: 0 });
   isZoneDetailView$ = this.isZoneDetailViewSubject.asObservable();
 
-  constructor(private _AppStateSrvc: AppStateService) {}
+  constructor(
+    private _AppStateSrvc: AppStateService,
+    private _PlotFeaturesService: PlotFeaturesService
+  ) {}
 
   setIsZoneCardView(value: boolean) {
     this.isZoneCardViewSubject.next(value);
@@ -61,9 +65,10 @@ export class ZoneCardService {
     if (statePlotFeatures) {
       features = statePlotFeatures.features;
     } else {
-      const plotFeatures = await PlotFeatures.create(zone);
+      const plotLayer = await this._PlotFeaturesService.getPlotLayer(zone);
+      features = await this._PlotFeaturesService.getFeaturesByQuery(plotLayer);
+      const plotFeatures = new PlotFeatures(zone, plotLayer, features);
       this._AppStateSrvc.addPlotFeatures(plotFeatures);
-      features = plotFeatures.features;
     }
     return features;
   }

@@ -5,6 +5,7 @@ import { first, firstValueFrom, lastValueFrom } from 'rxjs';
 import { ISubtype } from 'src/interfaces/subtype';
 import { PlotFeatures } from 'src/models/GS';
 import { AppStateService } from 'src/services/app-state.service';
+import { PlotFeaturesService } from 'src/services/plot-features.service';
 import { TypeCardService } from 'src/services/type-card.service';
 
 @Component({
@@ -25,7 +26,8 @@ export class TypeCardListComponent implements OnInit {
 
   constructor(
     private _AppStateSrvc: AppStateService,
-    private _TypeCardService: TypeCardService
+    private _TypeCardService: TypeCardService,
+    private _PlotFeaturesService: PlotFeaturesService
   ) {}
 
   async ngOnInit() {
@@ -50,7 +52,11 @@ export class TypeCardListComponent implements OnInit {
       await statePlotFeatures.plotLayer.when();
       this.plotLayer = statePlotFeatures.plotLayer;
     } else {
-      const plotFeatures = await PlotFeatures.create(this.zone);
+      const plotLayer = await this._PlotFeaturesService.getPlotLayer(this.zone);
+      const features = await this._PlotFeaturesService.getFeaturesByQuery(
+        plotLayer
+      );
+      const plotFeatures = new PlotFeatures(this.zone, plotLayer, features);
       this._AppStateSrvc.addPlotFeatures(plotFeatures);
 
       this.features = plotFeatures.features;
