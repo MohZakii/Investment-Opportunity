@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { environment } from '../environments/environment';
 import Extent from '@arcgis/core/geometry/Extent.js';
 import Sublayer from '@arcgis/core/layers/support/Sublayer.js';
 import Graphic from '@arcgis/core/Graphic.js';

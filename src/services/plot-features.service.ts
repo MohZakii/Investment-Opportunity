@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import Graphic from '@arcgis/core/Graphic';
 import Sublayer from '@arcgis/core/layers/support/Sublayer';
-import { PlotFeatures } from 'src/models/GS';
 import { AppStateService } from './app-state.service';
-import { ZoneCardService } from './zone-card.service';
 import Query from '@arcgis/core/rest/support/Query';
 
 @Injectable({

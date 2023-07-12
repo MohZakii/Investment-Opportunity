@@ -1,8 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import Graphic from '@arcgis/core/Graphic';
 import Sublayer from '@arcgis/core/layers/support/Sublayer';
-import { first, firstValueFrom, lastValueFrom } from 'rxjs';
-import { ISubtype } from 'src/interfaces/subtype';
 import { PlotFeatures } from 'src/models/GS';
 import { AppStateService } from 'src/services/app-state.service';
 import { PlotFeaturesService } from 'src/services/plot-features.service';
