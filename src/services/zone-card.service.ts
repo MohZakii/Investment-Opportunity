@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { AppStateService } from './app-state.service';
 import { PlotFeatures } from 'src/models/GS';
 import { PlotFeaturesService } from './plot-features.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,7 @@ import { PlotFeaturesService } from './plot-features.service';
 export class ZoneCardService {
   private isZoneCardViewSubject = new BehaviorSubject<boolean>(true);
   isZoneCardView$ = this.isZoneCardViewSubject.asObservable();
+  plotLayerNamePrefix: string;
 
   private isZoneDetailViewSubject = new BehaviorSubject<{
     isCardDetailView: boolean;
@@ -21,7 +23,9 @@ export class ZoneCardService {
   constructor(
     private _AppStateSrvc: AppStateService,
     private _PlotFeaturesService: PlotFeaturesService
-  ) {}
+  ) {
+    this.plotLayerNamePrefix = environment.plotLayerNamePrefix;
+  }
 
   setIsZoneCardView(value: boolean) {
     this.isZoneCardViewSubject.next(value);
@@ -39,14 +43,16 @@ export class ZoneCardService {
     let plotLayer: Sublayer;
 
     // search for plot layer as a direct sublayer
-    plotLayer = zone.sublayers.find((sublayer) => sublayer.title === 'Plot');
+    plotLayer = zone.sublayers.find((sublayer) =>
+      sublayer.title.startsWith(this.plotLayerNamePrefix)
+    );
 
     // search for plot layer as a sublayer of the sublayer
     if (!plotLayer) {
       zone.sublayers.map((item) => {
         if (!plotLayer) {
-          plotLayer = item.sublayers?.find(
-            (sublayer: Sublayer) => sublayer.title === 'Plot'
+          plotLayer = item.sublayers?.find((sublayer: Sublayer) =>
+            sublayer.title.startsWith(this.plotLayerNamePrefix)
           );
         }
       });

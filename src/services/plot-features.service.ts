@@ -3,26 +3,32 @@ import Graphic from '@arcgis/core/Graphic';
 import Sublayer from '@arcgis/core/layers/support/Sublayer';
 import { AppStateService } from './app-state.service';
 import Query from '@arcgis/core/rest/support/Query';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PlotFeaturesService {
-  constructor(private appStateSrvc: AppStateService) {}
+  plotLayerNamePrefix: string;
+  constructor(private appStateSrvc: AppStateService) {
+    this.plotLayerNamePrefix = environment.plotLayerNamePrefix;
+  }
 
   async getPlotLayer(zone: Sublayer): Promise<Sublayer> {
     await zone.when();
     let plotLayer: Sublayer;
 
     // search for plot layer as a direct sublayer
-    plotLayer = zone.sublayers.find((sublayer) => sublayer.title === 'Plot');
+    plotLayer = zone.sublayers.find((sublayer) =>
+      sublayer.title.startsWith(this.plotLayerNamePrefix)
+    );
 
     // search for plot layer as a sublayer of the sublayer
     if (!plotLayer) {
       zone.sublayers.map((item) => {
         if (!plotLayer) {
-          plotLayer = item.sublayers?.find(
-            (sublayer: Sublayer) => sublayer.title === 'Plot'
+          plotLayer = item.sublayers?.find((sublayer: Sublayer) =>
+            sublayer.title.startsWith(this.plotLayerNamePrefix)
           );
         }
       });
