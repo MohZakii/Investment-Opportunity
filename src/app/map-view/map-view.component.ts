@@ -1,14 +1,14 @@
-import { Component, OnInit, effect } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import Graphic from '@arcgis/core/Graphic';
+import Map from '@arcgis/core/Map.js';
+import Extent from '@arcgis/core/geometry/Extent';
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import MapView from '@arcgis/core/views/MapView';
-import Map from '@arcgis/core/Map.js';
-import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js';
-import Graphic from '@arcgis/core/Graphic';
-
 import { environment } from 'src/environments/environment';
-import { MapService } from 'src/services/map.service';
-import { MapViewSpatialReference, ZoneLayer } from 'src/models/GS';
+import { MapViewSpatialReference } from 'src/models/GS';
 import { AppStateService } from 'src/services/app-state.service';
+import { MapService } from 'src/services/map.service';
 
 @Component({
   selector: 'app-map-view',
@@ -26,7 +26,6 @@ export class MapViewComponent implements OnInit {
     private _AppStateSrvc: AppStateService,
     private mapService: MapService
   ) {}
-
   ngOnInit(): void {
     this.initializeMap().then(() => {
       // creates zoneLayers in appState
@@ -62,7 +61,11 @@ export class MapViewComponent implements OnInit {
     this.mapImageLayer.when(() => {
       this.view.when(() => {
         const opts = { duration: 1000 };
-        this.view.goTo({ target: this.mapImageLayer.fullExtent }, opts);
+        var initialExtent = Extent.fromJSON(
+          this.mapImageLayer.sourceJSON.initialExtent
+        );
+        this.view.goTo(initialExtent);
+        // this.view.goTo({ target: this.mapImageLayer.fullExtent }, opts);
       });
     });
 
@@ -81,12 +84,15 @@ export class MapViewComponent implements OnInit {
     });
   }
 
-  zoomToExtent(fullExtent: __esri.Extent | __esri.Collection<Graphic>) {
+  private zoomToExtent(fullExtent: __esri.Extent | __esri.Collection<Graphic>) {
     const opts = { duration: 1000 };
     this.view.goTo(fullExtent, opts);
   }
 
-  filterFeatures(plotLayer: __esri.Sublayer, features: __esri.Graphic[]) {
+  private filterFeatures(
+    plotLayer: __esri.Sublayer,
+    features: __esri.Graphic[]
+  ) {
     // create graphics layer and add it to the map
     let graphicsLayer = this.map.layers.find(
       (layer) => layer.id === plotLayer.id.toString()

@@ -4,7 +4,7 @@
   (click)="zoneCardClicked()"
 >
   <div>{{ zone.title }}</div>
-  <div *ngIf="features.length > 0">
+  <div *ngIf="!isLoading">
     <p class="display-6">{{ features.length }}</p>
     <app-bar-chart
       *ngIf="isBarChartReady"
@@ -12,11 +12,7 @@
       [data]="getBarChartValues().data"
     ></app-bar-chart>
   </div>
-  <div
-    *ngIf="features.length === 0"
-    class="spinner-border spinner-border-sm"
-    role="status"
-  >
+  <div *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status">
     <span class="sr-only"></span>
   </div>
   <div>...</div>

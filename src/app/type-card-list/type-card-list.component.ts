@@ -30,13 +30,15 @@ export class TypeCardListComponent implements OnInit {
   async ngOnInit() {
     await this.setFeatures();
 
-    this.subtypes = await this._TypeCardService.getSubtypesMap(
-      this.plotLayer.url
-    );
+    if (this.plotLayer) {
+      this.subtypes = await this._TypeCardService.getSubtypesMap(
+        this.plotLayer.url
+      );
 
-    this.featuresSubtyped = await this._TypeCardService.getFeaturesSubtyped(
-      this.plotLayer.url
-    );
+      this.featuresSubtyped = await this._TypeCardService.getFeaturesSubtyped(
+        this.plotLayer.url
+      );
+    }
   }
   async setFeatures() {
     let statePlotFeatures = this._AppStateSrvc
@@ -50,15 +52,17 @@ export class TypeCardListComponent implements OnInit {
       this.plotLayer = statePlotFeatures.plotLayer;
     } else {
       const plotLayer = await this._PlotFeaturesService.getPlotLayer(this.zone);
-      const features = await this._PlotFeaturesService.getFeaturesByQuery(
-        plotLayer
-      );
-      const plotFeatures = new PlotFeatures(this.zone, plotLayer, features);
-      this._AppStateSrvc.addPlotFeatures(plotFeatures);
+      if (plotLayer) {
+        const features = await this._PlotFeaturesService.getFeaturesByQuery(
+          plotLayer
+        );
+        const plotFeatures = new PlotFeatures(this.zone, plotLayer, features);
+        this._AppStateSrvc.addPlotFeatures(plotFeatures);
 
-      this.features = plotFeatures.features;
-      await plotFeatures.plotLayer.when();
-      this.plotLayer = plotFeatures.plotLayer;
+        this.features = plotFeatures.features;
+        await plotFeatures.plotLayer.when();
+        this.plotLayer = plotFeatures.plotLayer;
+      }
     }
   }
 }

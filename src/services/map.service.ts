@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import Extent from '@arcgis/core/geometry/Extent.js';
-import Sublayer from '@arcgis/core/layers/support/Sublayer.js';
 import Graphic from '@arcgis/core/Graphic.js';
+import Extent from '@arcgis/core/geometry/Extent.js';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+import Sublayer from '@arcgis/core/layers/support/Sublayer.js';
+import { BehaviorSubject } from 'rxjs';
 import { ZoneLayer } from 'src/models/GS';
 import { AppStateService } from './app-state.service';
 

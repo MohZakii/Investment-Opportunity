@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import Graphic from '@arcgis/core/Graphic';
 import Sublayer from '@arcgis/core/layers/support/Sublayer';
-import { AppStateService } from './app-state.service';
 import Query from '@arcgis/core/rest/support/Query';
 import { environment } from 'src/environments/environment';
+import { AppStateService } from './app-state.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,18 +14,18 @@ export class PlotFeaturesService {
     this.plotLayerNamePrefix = environment.plotLayerNamePrefix;
   }
 
-  async getPlotLayer(zone: Sublayer): Promise<Sublayer> {
+  async getPlotLayer(zone: Sublayer): Promise<Sublayer | undefined> {
     await zone.when();
     let plotLayer: Sublayer;
 
     // search for plot layer as a direct sublayer
-    plotLayer = zone.sublayers.find((sublayer) =>
+    plotLayer = zone.sublayers?.find((sublayer) =>
       sublayer.title.startsWith(this.plotLayerNamePrefix)
     );
 
     // search for plot layer as a sublayer of the sublayer
     if (!plotLayer) {
-      zone.sublayers.map((item) => {
+      zone.sublayers?.map((item) => {
         if (!plotLayer) {
           plotLayer = item.sublayers?.find((sublayer: Sublayer) =>
             sublayer.title.startsWith(this.plotLayerNamePrefix)
@@ -34,7 +34,11 @@ export class PlotFeaturesService {
       });
     }
 
-    return plotLayer;
+    if (plotLayer) {
+      return plotLayer;
+    } else {
+      return undefined;
+    }
   }
   async getFeaturesByQuery(plotLayer: Sublayer): Promise<Graphic[]> {
     const queryObj = new Query({

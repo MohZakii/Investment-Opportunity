@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import Sublayer from '@arcgis/core/layers/support/Sublayer';
 import { BehaviorSubject } from 'rxjs';
-import { AppStateService } from './app-state.service';
-import { PlotFeatures } from 'src/models/GS';
-import { PlotFeaturesService } from './plot-features.service';
 import { environment } from 'src/environments/environment';
+import { PlotFeatures } from 'src/models/GS';
+import { AppStateService } from './app-state.service';
+import { PlotFeaturesService } from './plot-features.service';
 
 @Injectable({
   providedIn: 'root',
@@ -38,18 +38,18 @@ export class ZoneCardService {
     });
   }
 
-  async getPlotLayer(zone: Sublayer): Promise<Sublayer> {
+  async getPlotLayer(zone: Sublayer): Promise<Sublayer | undefined> {
     await zone.when();
     let plotLayer: Sublayer;
 
     // search for plot layer as a direct sublayer
-    plotLayer = zone.sublayers.find((sublayer) =>
+    plotLayer = zone.sublayers?.find((sublayer) =>
       sublayer.title.startsWith(this.plotLayerNamePrefix)
     );
 
     // search for plot layer as a sublayer of the sublayer
     if (!plotLayer) {
-      zone.sublayers.map((item) => {
+      zone.sublayers?.map((item) => {
         if (!plotLayer) {
           plotLayer = item.sublayers?.find((sublayer: Sublayer) =>
             sublayer.title.startsWith(this.plotLayerNamePrefix)
@@ -58,7 +58,11 @@ export class ZoneCardService {
       });
     }
 
-    return plotLayer;
+    if (plotLayer) {
+      return plotLayer;
+    } else {
+      return undefined;
+    }
   }
 
   async getFeaturesFromState(zone: Sublayer): Promise<__esri.Graphic[]> {
@@ -72,10 +76,18 @@ export class ZoneCardService {
       features = statePlotFeatures.features;
     } else {
       const plotLayer = await this._PlotFeaturesService.getPlotLayer(zone);
-      features = await this._PlotFeaturesService.getFeaturesByQuery(plotLayer);
-      const plotFeatures = new PlotFeatures(zone, plotLayer, features);
-      this._AppStateSrvc.addPlotFeatures(plotFeatures);
+      if (plotLayer) {
+        features = await this._PlotFeaturesService.getFeaturesByQuery(
+          plotLayer
+        );
+        const plotFeatures = new PlotFeatures(zone, plotLayer, features);
+        this._AppStateSrvc.addPlotFeatures(plotFeatures);
+      }
     }
-    return features;
+    if (features) {
+      return features;
+    } else {
+      return [];
+    }
   }
 }

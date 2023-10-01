@@ -1,8 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import Graphic from '@arcgis/core/Graphic';
 import Sublayer from '@arcgis/core/layers/support/Sublayer';
-
-import { AppStateService } from 'src/services/app-state.service';
 import { MapService } from 'src/services/map.service';
 import { TypeCardService } from 'src/services/type-card.service';
 import { ZoneCardService } from 'src/services/zone-card.service';
@@ -23,6 +21,7 @@ export class ZoneCardItemComponent implements OnInit, OnDestroy {
   featuresSubtyped: Map<string | number, Graphic[]>;
   subtypes: Map<number | string, string> = new Map<number | string, string>();
   isBarChartReady: boolean = false;
+  isLoading: boolean = false;
 
   constructor(
     private mapService: MapService,
@@ -32,21 +31,27 @@ export class ZoneCardItemComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    this.isLoading = true;
     this.subscribeToServices();
 
     this.displayedZoneId = this.zone.id;
 
     this.features = await this._ZoneCardService.getFeaturesFromState(this.zone);
-    this.plotLayer = await this._ZoneCardService.getPlotLayer(this.zone);
-    this.subtypes = await this._TypeCardService.getSubtypesMap(
-      this.plotLayer.url
-    );
+    const plotLayer = await this._ZoneCardService.getPlotLayer(this.zone);
+    if (plotLayer) {
+      this.plotLayer = plotLayer;
+      const subtypes = plotLayer.sourceJSON.subtypes;
+      this.subtypes = await this._TypeCardService.getSubtypesMap(
+        this.plotLayer.url
+      );
 
-    this.featuresSubtyped = await this._TypeCardService.getFeaturesSubtyped(
-      this.plotLayer.url
-    );
+      this.featuresSubtyped = await this._TypeCardService.getFeaturesSubtyped(
+        this.plotLayer.url
+      );
+    }
 
     this.isBarChartReady = true;
+    this.isLoading = false;
   }
 
   zoneCardClicked() {
